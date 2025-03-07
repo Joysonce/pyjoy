@@ -1,0 +1,57 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset (replace 'sales_data.csv' with actual file path)
+df = pd.read_csv('sales_data.csv')
+
+# Display basic information
+print("Data Overview:")
+print(df.info())
+print(df.describe())
+
+# Check for missing values
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+# Sales Trend Analysis
+df['Date'] = pd.to_datetime(df['Date'])  # Ensure 'Date' column is in datetime format
+df.set_index('Date', inplace=True)
+daily_sales = df.groupby(df.index.date)['Sales'].sum()
+plt.figure(figsize=(12, 5))
+plt.plot(daily_sales, marker='o', linestyle='-')
+plt.xlabel('Date')
+plt.ylabel('Total Sales')
+plt.title('Daily Sales Trend')
+plt.xticks(rotation=45)
+plt.grid()
+plt.show()
+
+# Top Selling Products
+top_products = df.groupby('Product')['Sales'].sum().sort_values(ascending=False).head(10)
+plt.figure(figsize=(10, 5))
+sns.barplot(x=top_products.index, y=top_products.values, palette='viridis')
+plt.xlabel('Product')
+plt.ylabel('Total Sales')
+plt.title('Top 10 Best-Selling Products')
+plt.xticks(rotation=45)
+plt.show()
+
+# Sales by Category
+category_sales = df.groupby('Category')['Sales'].sum()
+plt.figure(figsize=(8, 5))
+category_sales.plot(kind='pie', autopct='%1.1f%%', cmap='Set3')
+plt.title('Sales Distribution by Category')
+plt.ylabel('')
+plt.show()
+
+# Customer Segmentation (Optional)
+if 'Customer_Age' in df.columns:
+    plt.figure(figsize=(10, 5))
+    sns.histplot(df['Customer_Age'], bins=20, kde=True)
+    plt.xlabel('Age')
+    plt.ylabel('Count')
+    plt.title('Customer Age Distribution')
+    plt.show()
+
+print("Analysis Completed.")
